@@ -1,0 +1,1 @@
+This is the discordbot for LoC's NorthDiscord discord server.
