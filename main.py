@@ -4,8 +4,9 @@ import discord.utils
 import discord
 import data
 from tokenid import tokenid
+from infoembed import create_embed
 
-bot = Bot(command_prefix="§")
+bot = Bot(command_prefix="§", case_insensitive=True)
 
 
 @bot.event
@@ -22,6 +23,49 @@ async def on_ready():
         await message.add_reaction(i)
 
     print("Bot has logged in succesfully")
+
+
+@bot.command(name="info", aliases=["infos", "About"])
+async def info(ctx: discord.Message):
+    """
+    Gives you some information about the bot
+    """
+    embed = create_embed()
+    await ctx.channel.send(embed=embed)
+
+
+@bot.command(name="server", aliases=["serverinfo", "server_information"])
+async def server(ctx: discord.Message):
+    guild: discord.Guild = bot.get_guild(514449077094580274)
+
+    embed = discord.Embed(title="NorthDiscord",
+                          description="Dies ist der offizielle Discordserver von LoC",
+                          color=data.color,
+                          url="https://discord.gg/Sx2saFx")
+    embed.set_thumbnail(url=data.servericon_url)
+    embed.add_field(name="Owner", value=guild.owner.mention, inline=True)
+    embed.add_field(name="Erstellungsdatum", value="20.11.2018", inline=True)
+    embed.add_field(name="Members", value=guild.member_count, inline=True)
+    embed.add_field(name="Rollen", value=str(len(guild.roles)), inline=True)
+    embed.add_field(name="Invitelink", value="https://discord.gg/Sx2saFx", inline=True)
+
+    embed.set_footer(text="Lade deine Freunde zu diesem Server ein, um ihn noch großartiger zu machen!",
+                     icon_url=data.avatar_url)
+
+    await ctx.channel.send(embed=embed)
+
+
+@bot.event
+async def on_voice_state_update(member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+    if after.channel is not None and after.channel.id == 728280381975035955:
+        category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
+        await category.create_voice_channel(name="Kanal von " + member.nick)
+        channel = discord.utils.get(member.guild.voice_channels, name="Kanal von " + member.nick)
+        await member.move_to(channel)
+
+    elif after.channel is None:
+        if not before.channel.members:
+            await before.channel.delete()
 
 
 @bot.event
@@ -64,5 +108,7 @@ async def on_message(ctx: discord.Message):
                               + datetime.datetime.now().strftime("%H:%M"))
 
         await logchannel.send(embed=embed)
+
+    await bot.process_commands(ctx)
 
 bot.run(tokenid)
