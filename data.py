@@ -17,6 +17,8 @@ badwords = ['fuck', 'penis', 'arschloch', 'arschlöcher', 'porn', 'spaken', 'spa
 
 color = 0x5098D6
 
+modchannel_id = 562665126646382602
+
 avatar_url = "https://cdn.discordapp.com/avatars/670637452863602708/57d4d3445204ea8239635099fdaa2328.png?size=256"
 
 servericon_url = "https://cdn.discordapp.com/icons/514449077094580274/f5ead1c53e2469c67bfa54bd0ec06a6f.png?size=256"

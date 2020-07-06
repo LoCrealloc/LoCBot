@@ -4,7 +4,7 @@ import discord.utils
 import discord
 import data
 from tokenid import tokenid
-from infoembed import create_embed
+from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed
 
 bot = Bot(command_prefix="§", case_insensitive=True)
 
@@ -30,29 +30,23 @@ async def info(ctx: discord.Message):
     """
     Gives you some information about the bot
     """
-    embed = create_embed()
+    embed = infoembed()
     await ctx.channel.send(embed=embed)
 
 
 @bot.command(name="server", aliases=["serverinfo", "server_information"])
 async def server(ctx: discord.Message):
     guild: discord.Guild = bot.get_guild(514449077094580274)
-
-    embed = discord.Embed(title="NorthDiscord",
-                          description="Dies ist der offizielle Discordserver von LoC",
-                          color=data.color,
-                          url="https://discord.gg/Sx2saFx")
-    embed.set_thumbnail(url=data.servericon_url)
-    embed.add_field(name="Owner", value=guild.owner.mention, inline=True)
-    embed.add_field(name="Erstellungsdatum", value="20.11.2018", inline=True)
-    embed.add_field(name="Members", value=guild.member_count, inline=True)
-    embed.add_field(name="Rollen", value=str(len(guild.roles)), inline=True)
-    embed.add_field(name="Invitelink", value="https://discord.gg/Sx2saFx", inline=True)
-
-    embed.set_footer(text="Lade deine Freunde zu diesem Server ein, um ihn noch großartiger zu machen!",
-                     icon_url=data.avatar_url)
+    embed = serverinfoembed(guild)
 
     await ctx.channel.send(embed=embed)
+
+
+@bot.event
+async def on_member_join(guild: discord.Guild, user: discord.User):
+    channel: discord.TextChannel = guild.get_channel(552452481167261697)
+    embed = joinembed(user)
+    await channel.send(embed=embed)
 
 
 @bot.event
@@ -61,6 +55,14 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
         category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
         await category.create_voice_channel(name="Kanal von " + member.nick)
         channel = discord.utils.get(member.guild.voice_channels, name="Kanal von " + member.nick)
+        await member.move_to(channel)
+
+    if after.channel is not None and after.channel.id == 729640108269240321:
+        category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
+        await category.create_voice_channel(name="Musikkanal von " + member.nick)
+        channel: discord.VoiceChannel = discord.utils.get(member.guild.voice_channels, name="Musikkanal von " + member.nick)
+        everyone: discord.Role = discord.utils.get(member.guild.roles, name="@everyone")
+        await channel.set_permissions(target=everyone, speak=False)
         await member.move_to(channel)
 
     elif after.channel is None:
@@ -88,6 +90,22 @@ async def on_raw_reaction_remove(ctx: discord.RawReactionActionEvent):
         await member.remove_roles(role)
 
 
+# Modkram
+@bot.event
+async def on_message_delete(message: discord.Message):
+    channel: discord.TextChannel = bot.get_channel(data.modchannel_id)
+    embed = deleteembed(message)
+    await channel.send(embed=embed)
+
+
+@bot.event
+async def on_message_edit(before: discord.Message, after: discord.Message):
+    if not before.author == bot.user:
+        channel: discord.TextChannel = bot.get_channel(data.modchannel_id)
+        embed = editembed(before, after)
+        await channel.send(embed=embed)
+
+
 @bot.event
 async def on_message(ctx: discord.Message):
     words = ctx.content.split(" ")
@@ -98,8 +116,8 @@ async def on_message(ctx: discord.Message):
         logchannel: discord.TextChannel = await bot.fetch_channel(562665126646382602)
 
         embed = discord.Embed(title="Nachricht gelöscht",
-                              description=f"{ctx.author.mention}" + " hat eine Nachricht mit unangebrachtem Inhalt in " +
-                                          f"{ctx.channel.mention}" + " gesendet:",
+                              description=f"{ctx.author.mention}" + " hat eine Nachricht mit unangebrachtem Inhalt in "
+                                          + f"{ctx.channel.mention}" + " gesendet:",
                               color=data.color)
         print(bot.user.colour)
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
@@ -111,4 +129,7 @@ async def on_message(ctx: discord.Message):
 
     await bot.process_commands(ctx)
 
-bot.run(tokenid)
+try:
+    bot.run(tokenid)
+except Exception as e:
+    print(e)
