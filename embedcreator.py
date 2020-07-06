@@ -53,7 +53,7 @@ def serverinfoembed(guild: Guild):
 def deleteembed(message: Message):
     embed = Embed(title="Nachricht gelöscht",
                   description=f"Eine Nachricht von {message.author.mention} "
-                              f"wurde in {message.channel.mention} bearbeitet",
+                              f"wurde in {message.channel.mention} gelöscht",
                   color=color,
                   url=message.jump_url)
     embed.set_author(name=message.author.name, url="https://discord.gg/Sx2saFx", icon_url=message.author.avatar_url)
@@ -69,7 +69,7 @@ def deleteembed(message: Message):
 def editembed(before: Message, after: Message):
     embed = Embed(title="Nachricht bearbeitet",
                   description=f"Eine Nachricht von {before.author.mention} "
-                              f"wurde in {before.channel.mention} gelöscht",
+                              f"wurde in {before.channel.mention} bearbeitet",
                   color=color,
                   url=after.jump_url)
     embed.set_author(name=after.author.name, url="https://discord.gg/Sx2saFx", icon_url=after.author.avatar_url)

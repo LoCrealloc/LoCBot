@@ -36,10 +36,22 @@ async def info(ctx: discord.Message):
 
 @bot.command(name="server", aliases=["serverinfo", "server_information"])
 async def server(ctx: discord.Message):
+    """
+    Gives you some information about the NorthDiscord
+    """
     guild: discord.Guild = bot.get_guild(514449077094580274)
     embed = serverinfoembed(guild)
 
     await ctx.channel.send(embed=embed)
+
+
+@bot.command(name="ping")
+async def ping(ctx: discord.Message):
+    """
+    Displays the bot latency
+    """
+    latency = bot.latency * 100
+    await ctx.channel.send(f"Pong! {latency} ms")
 
 
 @bot.event
