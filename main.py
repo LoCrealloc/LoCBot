@@ -63,7 +63,7 @@ async def on_member_join(guild: discord.Guild, user: discord.User):
 
 @bot.event
 async def on_voice_state_update(member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
-    if after.channel is not None and after.channel.id == 729764176402055239:
+    if after.channel is not None and after.channel.id == 729764750921302037:
         category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
         await category.create_voice_channel(name="Kanal von " + member.nick)
         channel = discord.utils.get(member.guild.voice_channels, name="Kanal von " + member.nick)
@@ -79,7 +79,9 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
         await member.move_to(channel)
 
     try:
-        if after.channel is None and before.channel.id == 729763126664495184 or before.channel.id == 729764176402055239:
+        if after.channel is None and before.channel.id == 729763126664495184 or after.channel \
+                is None and before.channel.id == 729764750921302037:
+
             if not before.channel.members:
                 await before.channel.delete()
     except AttributeError:
