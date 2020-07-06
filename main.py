@@ -79,8 +79,8 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
         await member.move_to(channel)
 
     try:
-        if after.channel is None and before.channel.id == 729763126664495184 or after.channel \
-                is None and before.channel.id == 729764750921302037:
+        if after.channel is None and not before.channel.id == 729763126664495184 or after.channel \
+                is None and not before.channel.id == 729764750921302037:
 
             if not before.channel.members:
                 await before.channel.delete()
