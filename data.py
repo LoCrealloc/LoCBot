@@ -31,3 +31,5 @@ features = ["Löschen von Nachrichten mit unangebrachtem Inhalt",
             "Nutzer können per Reaction die Farbe ihres Namens ändern",
             "Erstellen von Sprachkanälen"
             ]
+
+loc_mention = "@LoC [realLoC]#3313"

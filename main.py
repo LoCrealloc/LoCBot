@@ -118,7 +118,7 @@ async def on_message_delete(message: discord.Message):
 
 @bot.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
-    if not before.author == bot.user:
+    if not before.author == bot.user and not before.content == after.content:
         channel: discord.TextChannel = bot.get_channel(data.modchannel_id)
         embed = editembed(before, after)
         await channel.send(embed=embed)
@@ -131,13 +131,12 @@ async def on_message(ctx: discord.Message):
         await ctx.delete()
         await ctx.author.send("Bitte verzichte darauf, solche Wörter weiterhin auf **" + ctx.guild.name +
                               "** zu verwenden!")
-        logchannel: discord.TextChannel = await bot.fetch_channel(562665126646382602)
+        logchannel: discord.TextChannel = bot.get_channel(562665126646382602)
 
         embed = discord.Embed(title="Nachricht gelöscht",
                               description=f"{ctx.author.mention}" + " hat eine Nachricht mit unangebrachtem Inhalt in "
                                           + f"{ctx.channel.mention}" + " gesendet:",
                               color=data.color)
-        print(bot.user.colour)
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
         embed.add_field(name="Inhalt der Nachricht:", value=ctx.content)
         embed.set_footer(text="Nachricht gelöscht am " + datetime.datetime.now().strftime("%d.%m.%Y") + " um "
