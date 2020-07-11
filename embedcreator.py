@@ -79,3 +79,15 @@ def editembed(before: Message, after: Message):
     embed.set_footer(text=f"ID: {after.id}", icon_url=servericon_url)
 
     return embed
+
+
+def badwordembed(message: Message):
+    embed = Embed(title="Nachricht gelöscht",
+                  description=f"{message.author.mention} hat eine Nachricht mit unangebrachtem Inhalt in "
+                              f"{message.channel.mention} gesendet:",
+                  color=color)
+    embed.set_author(name=str(message.author), icon_url=message.author.avatar_url)
+    embed.add_field(name="Inhalt der Nachricht:", value=message.content)
+    embed.set_footer(text=f"ID: {message.id}", icon_url=servericon_url)
+
+    return embed

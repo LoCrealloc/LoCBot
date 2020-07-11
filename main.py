@@ -4,7 +4,7 @@ import discord.utils
 import discord
 import data
 from tokenid import tokenid
-from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed
+from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed
 
 bot = Bot(command_prefix="§", case_insensitive=True)
 
@@ -131,20 +131,12 @@ async def on_message(ctx: discord.Message):
     words = ctx.content.split(" ")
     if any(word.lower() in data.badwords for word in words):
         await ctx.delete()
-        await ctx.author.send("Bitte verzichte darauf, solche Wörter weiterhin auf **" + ctx.guild.name +
-                              "** zu verwenden!")
+        await ctx.author.send(f"Bitte verzichte darauf, solche Wörter weiterhin auf **{ctx.guild.name}** zu verwenden!")
         logchannel: discord.TextChannel = bot.get_channel(562665126646382602)
 
-        embed = discord.Embed(title="Nachricht gelöscht",
-                              description=f"{ctx.author.mention}" + " hat eine Nachricht mit unangebrachtem Inhalt in "
-                                          + f"{ctx.channel.mention}" + " gesendet:",
-                              color=data.color)
-        embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
-        embed.add_field(name="Inhalt der Nachricht:", value=ctx.content)
-        embed.set_footer(text="Nachricht gelöscht am " + datetime.datetime.now().strftime("%d.%m.%Y") + " um "
-                              + datetime.datetime.now().strftime("%H:%M"))
-
+        embed = badwordembed(ctx)
         await logchannel.send(embed=embed)
+        return
 
     await bot.process_commands(ctx)
 
