@@ -11,10 +11,10 @@ def infoembed():
     embed.add_field(name="Features", value="\n".join(f"- {feature}" for feature in features), inline=False)
     embed.add_field(name="Version", value=version, inline=True)
     embed.add_field(name="GitHub", value=repository_url, inline=False)
-    embed.add_field(name="Help-Befehl", value="§help")
+    embed.add_field(name="Help-Befehl", value="§help", inline=False)
     embed.add_field(name="Entwickler", value=f"Dieser Discordbot wird von {loc_mention} entwickelt! Bitte teile mir "
                                              f"Fehler oder Featurewünsche auf meinem Discordserver, per PN oder auf "
-                                             f"der Issue-Seite des Github-Repositories des Bots mit!")
+                                             f"der Issue-Seite des Github-Repositories des Bots mit!", inline=False)
 
     return embed
 

@@ -32,4 +32,4 @@ features = ["Löschen von Nachrichten mit unangebrachtem Inhalt",
             "Erstellen von Sprachkanälen"
             ]
 
-loc_mention = "@LoC [realLoC]#3313"
+loc_mention = "<@!519559136237715486>"

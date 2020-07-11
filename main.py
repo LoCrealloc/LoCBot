@@ -44,6 +44,8 @@ async def server(ctx: discord.Message):
 
     await ctx.channel.send(embed=embed)
 
+    print(guild.owner.mention)
+
 
 @bot.command(name="ping")
 async def ping(ctx: discord.Message):
