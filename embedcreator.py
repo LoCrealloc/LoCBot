@@ -59,9 +59,6 @@ def deleteembed(message: Message):
                   url=message.jump_url)
     embed.set_author(name=message.author.name, url="https://discord.gg/Sx2saFx", icon_url=message.author.avatar_url)
     embed.add_field(name="Inhalt der Nachricht", value=message.content, inline=False)
-    if message.mentions:
-        print(message.mentions)
-        embed.add_field(name="Erwähnungen", value="\n".join(f"- {mention}" for mention in message.mentions))
     embed.set_footer(text=f"ID: {message.id}", icon_url=servericon_url)
 
     return embed
