@@ -1,6 +1,6 @@
 import discord
 
-reactions = ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚫', '⚪']
+reactions = ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '⚪']
 
 reactord = {'🔴': "red",
             '🟠': "orange",
@@ -8,7 +8,6 @@ reactord = {'🔴': "red",
             '🟢': "green",
             '🔵': "blue",
             '🟣': "purple",
-            '⚫': "black",
             '⚪': "white"}
 
 badwords = ['fuck', 'penis', 'arschloch', 'arschlöcher', 'porn', 'spaken', 'spacken', 'nigger',

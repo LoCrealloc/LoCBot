@@ -88,3 +88,13 @@ def badwordembed(message: Message):
     embed.set_footer(text=f"ID: {message.id}", icon_url=servericon_url)
 
     return embed
+
+
+def linkembed(message: Message):
+    embed = Embed(title="Nachricht gelöscht",
+                  description="Grund: die Nachricht enthielt Werbung für andere Server!",
+                  color=0xB3170D)
+
+    embed.set_footer(text=f"Autor: {message.author.mention}", icon_url=message.author.avatar_url)
+
+    return embed
