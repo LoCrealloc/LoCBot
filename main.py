@@ -65,30 +65,31 @@ async def on_member_join(guild: discord.Guild, user: discord.User):
 
 @bot.event
 async def on_voice_state_update(member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+    global channelcounter, musicchannelcounter
+
     try:
-        if after.channel is not None and after.channel.id == 742106374116474961:
+        if after.channel is not None and after.channel.id == 742109026426290176:
             category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
-            await category.create_voice_channel(name="Kanal von " + member.nick)
-            channel = discord.utils.get(member.guild.voice_channels, name="Kanal von " + member.nick)
+            channel = await category.create_voice_channel(name=f"Kanal Nr. {str(channelcounter)}")
             await member.move_to(channel)
 
-        if after.channel is not None and after.channel.id == 742106421230960652:
+            channelcounter += 1
+
+        if after.channel is not None and after.channel.id == 742108180531642720:
             category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
-            await category.create_voice_channel(name="Musikkanal von " + member.nick)
-            channel: discord.VoiceChannel = discord.utils.get(member.guild.voice_channels,
-                                                              name="Musikkanal von " + member.nick)
+            channel = await category.create_voice_channel(name=f"Musikkanal Nr. {str(musicchannelcounter)}")
             everyone: discord.Role = discord.utils.get(member.guild.roles, name="@everyone")
             await channel.set_permissions(target=everyone, speak=False)
             await member.move_to(channel)
 
         try:
-            if after.channel is None and not before.channel.id == 742106374116474961 or after.channel \
-                    is None and not before.channel.id == 742106421230960652:
+            if after.channel is None and not before.channel.id == 742109026426290176 or after.channel \
+                    is None and not before.channel.id == 742108180531642720:
 
                 if not before.channel.members:
                     await before.channel.delete()
-        except AttributeError:
-            pass
+        except Exception as e:
+            print(e)
 
     except Exception as e:
         print(e)
@@ -159,5 +160,8 @@ async def on_message(ctx: discord.Message):
 
     await bot.process_commands(ctx)
 
+
+channelcounter = 1
+musicchannelcounter = 1
 
 bot.run(tokenid)
