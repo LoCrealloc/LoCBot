@@ -69,6 +69,8 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
 
     try:
         if after.channel is not None and after.channel.id == 742109026426290176:
+            # if-Abfrage für den normalen Kanal
+
             category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
             channel = await category.create_voice_channel(name=f"Kanal Nr. {str(channelcounter)}")
             await member.move_to(channel)
@@ -76,11 +78,15 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
             channelcounter += 1
 
         if after.channel is not None and after.channel.id == 742108180531642720:
+            # if-Abfrage für den Musikkanal
+
             category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
             channel = await category.create_voice_channel(name=f"Musikkanal Nr. {str(musicchannelcounter)}")
             everyone: discord.Role = discord.utils.get(member.guild.roles, name="@everyone")
             await channel.set_permissions(target=everyone, speak=False)
             await member.move_to(channel)
+
+            musicchannelcounter += 1
 
         try:
             if after.channel is None and not before.channel.id == 742109026426290176 or after.channel \
@@ -88,6 +94,12 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
 
                 if not before.channel.members:
                     await before.channel.delete()
+                    if before.channel.name.startswith("Kanal"):
+                        channelcounter -= 1
+
+                    elif before.channel.name.startswith("Musikkanal"):
+                        musicchannelcounter -= 1
+
         except Exception as e:
             print(e)
 
