@@ -65,11 +65,9 @@ async def purge(ctx: Context, amount: int):
     """
     channel: TextChannel = ctx.channel
 
-    deleted = await channel.purge(limit=amount)
+    await channel.purge(limit=amount)
 
-    message = await channel.send(f"{len(deleted)} Nachrichten wurden gelöscht!")
     await sleep(3)
-    await message.delete()
     await ctx.message.delete()
 
 
