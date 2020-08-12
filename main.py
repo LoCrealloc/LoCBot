@@ -1,10 +1,11 @@
 import datetime
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, has_permissions, errors, Context
 import discord.utils
-import discord
+from discord import TextChannel, Message
 import data
 from tokenid import tokenid
 from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed
+from asyncio import sleep
 
 bot = Bot(command_prefix="§", case_insensitive=True)
 
@@ -25,7 +26,7 @@ async def on_ready():
     print("Bot has logged in succesfully")
 
 
-@bot.command(name="info", aliases=["infos", "About"])
+@bot.command(name="info", aliases=["infos", "about"])
 async def info(ctx: discord.Message):
     """
     Gives you some information about the bot
@@ -54,6 +55,22 @@ async def ping(ctx: discord.Message):
     """
     latency = bot.latency * 100
     await ctx.channel.send(f"Pong! {latency} ms")
+
+
+@bot.command(name="purge", aliases=["clear"])
+@has_permissions(administrator=True)
+async def purge(ctx: Context, amount: int):
+    """
+    Purges a number of messages in a channel
+    """
+    channel: TextChannel = ctx.channel
+
+    deleted = await channel.purge(limit=amount)
+
+    message = await channel.send(f"{len(deleted)} Nachrichten wurden gelöscht!")
+    await sleep(3)
+    await message.delete()
+    await ctx.message.delete()
 
 
 @bot.event
@@ -145,32 +162,46 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
 
 @bot.event
-async def on_message(ctx: discord.Message):
-    if ctx.author == bot.user:
+async def on_message(message: Message):
+    if message.author == bot.user:
         return
 
     for word in data.badwords:
-        if word in ctx.content.lower():
-            await ctx.delete()
-            await ctx.author.send(f"Bitte verzichte darauf, solche Wörter weiterhin auf "
-                                  f"**{ctx.guild.name}** zu verwenden!")
+        if word in message.content.lower():
+            await message.delete()
+            await message.author.send(f"Bitte verzichte darauf, solche Wörter weiterhin auf "
+                                      f"**{message.guild.name}** zu verwenden!")
 
             logchannel: discord.TextChannel = bot.get_channel(562665126646382602)
 
-            embed = badwordembed(ctx)
+            embed = badwordembed(message)
             await logchannel.send(embed=embed)
 
             return
 
-        if "discord.gg" in ctx.content and "discord.gg/Sx2saFx" not in ctx.content:
-            await ctx.delete()
-            await ctx.author.send(f"Werbung für andere Server ist auf **{ctx.guild.name}** untersagt!")
+        if "discord.gg" in message.content and "discord.gg/Sx2saFx" not in message.content:
+            await message.delete()
+            await message.author.send(f"Werbung für andere Server ist auf **{message.guild.name}** untersagt!")
 
-            ctx.channel.send(embed=linkembed(ctx))
+            message.channel.send(embed=linkembed(message))
 
             return
 
-    await bot.process_commands(ctx)
+    await bot.process_commands(message)
+
+
+@bot.event
+async def on_command_error(ctx: Context, error: errors.CommandError):
+    if isinstance(error, errors.MissingRequiredArgument):
+        await ctx.channel.send("Für deinen Befehl fehlen Argumente!")
+
+    elif isinstance(error, errors.BadArgument):
+        await ctx.channel.send("Dein Argument bzw. deine Argumente hatten einen ungültigen Wert!")
+
+    else:
+        print(error)
+
+    await ctx.channel.send("Für eine Übersicht, schreibe §help")
 
 
 channelcounter = 1
