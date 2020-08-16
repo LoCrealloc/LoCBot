@@ -194,6 +194,9 @@ async def on_command_error(ctx: Context, error: errors.CommandError):
     elif isinstance(error, errors.BadArgument):
         await ctx.channel.send("Dein Argument bzw. deine Argumente hatten einen ungültigen Wert!")
 
+    elif isinstance(error, errors.MissingPermissions):
+        await ctx.channel.send("Du hast keine Erlaubnis dazu, diesen Befehl zu verwenden!")
+
     else:
         print(error)
 
