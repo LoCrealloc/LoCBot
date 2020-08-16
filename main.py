@@ -16,9 +16,9 @@ async def on_ready():
 
     await bot.change_presence(activity=activity, status=discord.Status.online)
 
-    channel: discord.TextChannel = bot.get_channel(686286732693733482)
+    channel: discord.TextChannel = bot.get_channel(data.rolechannel_id)
 
-    message: discord.Message = await channel.fetch_message(696020561876353036)
+    message: discord.Message = await channel.fetch_message(data.rolemessage_id)
 
     for i in data.reactions:
         await message.add_reaction(i)
@@ -73,7 +73,7 @@ async def purge(ctx: Context, amount: int):
 
 @bot.event
 async def on_member_join(guild: discord.Guild, user: discord.User):
-    channel: discord.TextChannel = guild.get_channel(552452481167261697)
+    channel: discord.TextChannel = guild.get_channel(data.lobby_channel_id)
     embed = joinembed(user)
     await channel.send(embed=embed)
 
@@ -83,19 +83,19 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
     global channelcounter, musicchannelcounter
 
     try:
-        if after.channel is not None and after.channel.id == 742109026426290176:
+        if after.channel is not None and after.channel.id == data.new_channel_id:
             # if-Abfrage für den normalen Kanal
 
-            category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
+            category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=data.voice_category_id)
             channel = await category.create_voice_channel(name=f"Kanal Nr. {str(channelcounter)}")
             await member.move_to(channel)
 
             channelcounter += 1
 
-        if after.channel is not None and after.channel.id == 742108180531642720:
+        if after.channel is not None and after.channel.id == data.new_music_channel_id:
             # if-Abfrage für den Musikkanal
 
-            category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=554265879463067659)
+            category: discord.CategoryChannel = discord.utils.get(member.guild.categories, id=data.voice_category_id)
             channel = await category.create_voice_channel(name=f"Musikkanal Nr. {str(musicchannelcounter)}")
             everyone: discord.Role = discord.utils.get(member.guild.roles, name="@everyone")
             await channel.set_permissions(target=everyone, speak=False)
@@ -104,9 +104,7 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
             musicchannelcounter += 1
 
         try:
-            if after.channel is None and not before.channel.id == 742109026426290176 or after.channel \
-                    is None and not before.channel.id == 742108180531642720:
-
+            if after.channel is None and before.channel.id not in [data.new_channel_id, data.new_music_channel_id]:
                 if not before.channel.members:
                     await before.channel.delete()
                     if before.channel.name.startswith("Kanal"):
@@ -124,22 +122,22 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
 
 @bot.event
 async def on_raw_reaction_add(ctx: discord.RawReactionActionEvent):
-    if ctx.message_id == 696020561876353036:
+    if ctx.message_id == data.rolemessage_id:
         if ctx.emoji.name in data.reactions:
             color = data.reactord[ctx.emoji.name]
-            guild: discord.Guild = await bot.fetch_guild(514449077094580274)
+            guild: discord.Guild = await bot.fetch_guild(data.guild_id)
             role = discord.utils.get(guild.roles, name=color)
             member: discord.Member = await guild.fetch_member(ctx.user_id)
             await member.add_roles(role)
 
 
 @bot.event
-async def on_raw_reaction_remove(ctx: discord.RawReactionActionEvent):
-    if ctx.message_id == 696020561876353036:
-        color = data.reactord[ctx.emoji.name]
-        guild: discord.Guild = await bot.fetch_guild(514449077094580274)
+async def on_raw_reaction_remove(reaction: discord.RawReactionActionEvent):
+    if reaction.message_id == data.rolemessage_id:
+        color = data.reactord[reaction.emoji.name]
+        guild: discord.Guild = await bot.fetch_guild(data.guild_id)
         role = discord.utils.get(guild.roles, name=color)
-        member: discord.Member = await guild.fetch_member(ctx.user_id)
+        member: discord.Member = await guild.fetch_member(reaction.user_id)
         await member.remove_roles(role)
 
 
@@ -170,7 +168,7 @@ async def on_message(message: Message):
             await message.author.send(f"Bitte verzichte darauf, solche Wörter weiterhin auf "
                                       f"**{message.guild.name}** zu verwenden!")
 
-            logchannel: discord.TextChannel = bot.get_channel(562665126646382602)
+            logchannel: discord.TextChannel = bot.get_channel(data.logchannel_id)
 
             embed = badwordembed(message)
             await logchannel.send(embed=embed)
