@@ -1,4 +1,4 @@
-from discord import Embed, User, Guild, Message
+from discord import Embed, User, Guild, Message, Member
 from data import avatar_url, repository_url, color, version, features, servericon_url, loc_mention
 
 
@@ -69,7 +69,7 @@ def editembed(before: Message, after: Message):
                               f"wurde in {before.channel.mention} bearbeitet",
                   color=color,
                   url=after.jump_url)
-    embed.set_author(name=after.author.name, url="https://discord.gg/Sx2saFx", icon_url=after.author.avatar_url)
+    embed.set_author(name=after.author.mention, url="https://discord.gg/Sx2saFx", icon_url=after.author.avatar_url)
     embed.add_field(name="Vorherige Nachricht", value=before.content, inline=False)
     embed.add_field(name="Nachricht nach Bearbeitung", value=after.content, inline=False)
     embed.set_footer(text=f"ID: {after.id}", icon_url=servericon_url)
@@ -94,6 +94,18 @@ def linkembed(message: Message):
                   description="Grund: die Nachricht enthielt Werbung für andere Server!",
                   color=0xB3170D)
 
-    embed.set_footer(text=f"Autor: {message.author.mention}", icon_url=message.author.avatar_url)
+    embed.set_footer(text=f"Autor: {message.author.display_name}", icon_url=message.author.avatar_url)
+
+    return embed
+
+
+def muteembed(author: Member, user: Member, time: int, newtime: int):
+    embed = Embed(title="Benutzer stummgeschaltet",
+                  description=f"{author.mention} hat {user.mention} für {time} Minuten stummgeschaltet!",
+                  color=color)
+
+    embed.set_author(name=author.display_name, icon_url=author.avatar_url)
+    embed.add_field(name="Verbleibende Zeit:", value=f"{newtime} Minuten")
+    embed.set_footer(text=user.display_name, icon_url=user.avatar_url)
 
     return embed

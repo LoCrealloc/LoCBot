@@ -1,11 +1,13 @@
 import datetime
 from discord.ext.commands import Bot, has_permissions, errors, Context
 import discord.utils
-from discord import TextChannel, Message
+from discord import TextChannel, Message, Member, Guild
 import data
 from tokenid import tokenid
-from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed
+from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed, \
+     muteembed
 from asyncio import sleep
+import time as t
 
 bot = Bot(command_prefix="§", case_insensitive=True)
 
@@ -29,7 +31,7 @@ async def on_ready():
 @bot.command(name="info", aliases=["infos", "about"])
 async def info(ctx: discord.Message):
     """
-    Gives you some information about the bot
+    Gives you some information about the locbot
     """
     embed = infoembed()
     await ctx.channel.send(embed=embed)
@@ -69,6 +71,43 @@ async def purge(ctx: Context, amount: int):
 
     await sleep(3)
     await ctx.message.delete()
+
+
+@bot.command(name="mute")
+@has_permissions(administrator=True)
+async def mute(ctx: Context, user: Member, time: int):
+    guild: Guild = bot.get_guild(data.guild_id)
+    muterole = guild.get_role(data.muterole_id)
+
+    await ctx.message.delete()
+
+    await user.add_roles(muterole)
+
+    embed = muteembed(author=ctx.author, user=user, time=time, newtime=time)
+
+    message: Message = await ctx.channel.send(content=user.mention, embed=embed)
+
+    time1 = t.time()
+
+    for minute in range(time):
+
+        minute += 1
+
+        await sleep(60)
+
+        embed = muteembed(author=ctx.author, user=user, time=time, newtime=time-minute)
+
+        await message.edit(embed=embed)
+
+        print(minute)
+
+    time2 = t.time()
+
+    await message.delete()
+
+    await user.remove_roles(muterole)
+
+    print(time2-time1)
 
 
 @bot.event
@@ -144,9 +183,10 @@ async def on_raw_reaction_remove(reaction: discord.RawReactionActionEvent):
 # Modkram
 @bot.event
 async def on_message_delete(message: discord.Message):
-    channel: discord.TextChannel = bot.get_channel(data.modchannel_id)
-    embed = deleteembed(message)
-    await channel.send(embed=embed)
+    if message.content:
+        channel: discord.TextChannel = bot.get_channel(data.modchannel_id)
+        embed = deleteembed(message)
+        await channel.send(embed=embed)
 
 
 @bot.event
