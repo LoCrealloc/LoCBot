@@ -1,4 +1,3 @@
-import datetime
 from discord.ext.commands import Bot, has_permissions, errors, Context
 import discord.utils
 from discord import TextChannel, Message, Member, Guild
@@ -7,7 +6,6 @@ from tokenid import tokenid
 from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed, \
      muteembed
 from asyncio import sleep
-import time as t
 
 bot = Bot(command_prefix="§", case_insensitive=True)
 
@@ -87,8 +85,6 @@ async def mute(ctx: Context, user: Member, time: int):
 
     message: Message = await ctx.channel.send(content=user.mention, embed=embed)
 
-    time1 = t.time()
-
     for minute in range(time):
 
         minute += 1
@@ -99,15 +95,9 @@ async def mute(ctx: Context, user: Member, time: int):
 
         await message.edit(embed=embed)
 
-        print(minute)
-
-    time2 = t.time()
-
     await message.delete()
 
     await user.remove_roles(muterole)
-
-    print(time2-time1)
 
 
 @bot.event
