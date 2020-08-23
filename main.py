@@ -1,10 +1,9 @@
 from discord.ext.commands import Bot, has_permissions, errors, Context
 import discord.utils
-from discord import TextChannel, Message
+from discord import Message
 import data
 from tokenid import tokenid
-from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed
-from asyncio import sleep
+from embedcreator import joinembed, deleteembed, editembed, badwordembed, linkembed
 from cogs.administration import Administration
 from util import add_cogs
 
@@ -25,37 +24,6 @@ async def on_ready():
         await message.add_reaction(i)
 
     print("Bot has logged in succesfully")
-
-
-@bot.command(name="info", aliases=["infos", "about"])
-async def info(ctx: discord.Message):
-    """
-    Gives you some information about the locbot
-    """
-    embed = infoembed()
-    await ctx.channel.send(embed=embed)
-
-
-@bot.command(name="server", aliases=["serverinfo", "server_information"])
-async def server(ctx: discord.Message):
-    """
-    Gives you some information about the NorthDiscord
-    """
-    guild: discord.Guild = bot.get_guild(514449077094580274)
-    embed = serverinfoembed(guild)
-
-    await ctx.channel.send(embed=embed)
-
-    print(guild.owner.mention)
-
-
-@bot.command(name="ping")
-async def ping(ctx: discord.Message):
-    """
-    Displays the bot latency
-    """
-    latency = bot.latency * 100
-    await ctx.channel.send(f"Pong! {latency} ms")
 
 
 @bot.event
