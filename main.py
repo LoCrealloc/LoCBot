@@ -102,7 +102,7 @@ async def mute(ctx: Context, user: Member, time: int):
 
 @bot.event
 async def on_member_join(guild: discord.Guild, user: discord.User):
-    channel: discord.TextChannel = guild.get_channel(data.lobby_channel_id)
+    channel: discord.TextChannel = guild.system_channel
     embed = joinembed(user)
     await channel.send(embed=embed)
 
