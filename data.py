@@ -37,8 +37,6 @@ rolechannel_id = 686286732693733482
 
 rolemessage_id = 696020561876353036
 
-lobby_channel_id = 552452481167261697
-
 voice_category_id = 554265879463067659
 
 new_channel_id = 742109026426290176
@@ -50,3 +48,5 @@ logchannel_id = 562665126646382602
 modchannel_id = 562665126646382602
 
 muterole_id = 744989110653157506
+
+test_url = "https://www.youtube.com/watch?v=lTRiuFIWV54"

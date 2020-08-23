@@ -1,11 +1,12 @@
 from discord.ext.commands import Bot, has_permissions, errors, Context
 import discord.utils
-from discord import TextChannel, Message, Member, Guild
+from discord import TextChannel, Message
 import data
 from tokenid import tokenid
-from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed, \
-     muteembed
+from embedcreator import infoembed, joinembed, serverinfoembed, deleteembed, editembed, badwordembed, linkembed
 from asyncio import sleep
+from cogs.administration import Administration
+from util import add_cogs
 
 bot = Bot(command_prefix="§", case_insensitive=True)
 
@@ -55,49 +56,6 @@ async def ping(ctx: discord.Message):
     """
     latency = bot.latency * 100
     await ctx.channel.send(f"Pong! {latency} ms")
-
-
-@bot.command(name="purge", aliases=["clear"])
-@has_permissions(administrator=True)
-async def purge(ctx: Context, amount: int):
-    """
-    Purges a number of messages in a channel
-    """
-    channel: TextChannel = ctx.channel
-
-    await channel.purge(limit=amount)
-
-    await sleep(3)
-    await ctx.message.delete()
-
-
-@bot.command(name="mute")
-@has_permissions(administrator=True)
-async def mute(ctx: Context, user: Member, time: int):
-    guild: Guild = bot.get_guild(data.guild_id)
-    muterole = guild.get_role(data.muterole_id)
-
-    await ctx.message.delete()
-
-    await user.add_roles(muterole)
-
-    embed = muteembed(author=ctx.author, user=user, time=time, newtime=time)
-
-    message: Message = await ctx.channel.send(content=user.mention, embed=embed)
-
-    for minute in range(time):
-
-        minute += 1
-
-        await sleep(60)
-
-        embed = muteembed(author=ctx.author, user=user, time=time, newtime=time-minute)
-
-        await message.edit(embed=embed)
-
-    await message.delete()
-
-    await user.remove_roles(muterole)
 
 
 @bot.event
@@ -227,6 +185,9 @@ async def on_command_error(ctx: Context, error: errors.CommandError):
     elif isinstance(error, errors.MissingPermissions):
         await ctx.channel.send("Du hast keine Erlaubnis dazu, diesen Befehl zu verwenden!")
 
+    elif isinstance(error, errors.CommandNotFound):
+        await ctx.channel.send("Dieser Befehl konnte nicht gefunden werden!")
+
     else:
         print(error)
 
@@ -235,5 +196,7 @@ async def on_command_error(ctx: Context, error: errors.CommandError):
 
 channelcounter = 1
 musicchannelcounter = 1
+
+add_cogs(bot, [Administration])
 
 bot.run(tokenid)
