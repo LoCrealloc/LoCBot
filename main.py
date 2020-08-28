@@ -1,10 +1,11 @@
-from discord.ext.commands import Bot, has_permissions, errors, Context
+from discord.ext.commands import Bot, errors, Context
 import discord.utils
-from discord import Message
+from discord import Message, Game, TextChannel, Member
 import data
 from tokenid import tokenid
 from embedcreator import joinembed, deleteembed, editembed, badwordembed, linkembed
 from cogs.administration import Administration
+from cogs.information import Information
 from util import add_cogs
 
 bot = Bot(command_prefix="§", case_insensitive=True)
@@ -12,13 +13,13 @@ bot = Bot(command_prefix="§", case_insensitive=True)
 
 @bot.event
 async def on_ready():
-    activity = discord.Game(name="§info")
+    activity = Game(name="§info")
 
     await bot.change_presence(activity=activity, status=discord.Status.online)
 
-    channel: discord.TextChannel = bot.get_channel(data.rolechannel_id)
+    channel: TextChannel = bot.get_channel(data.rolechannel_id)
 
-    message: discord.Message = await channel.fetch_message(data.rolemessage_id)
+    message: Message = await channel.fetch_message(data.rolemessage_id)
 
     for i in data.reactions:
         await message.add_reaction(i)
@@ -27,9 +28,9 @@ async def on_ready():
 
 
 @bot.event
-async def on_member_join(guild: discord.Guild, user: discord.User):
-    channel: discord.TextChannel = guild.system_channel
-    embed = joinembed(user)
+async def on_member_join(member: Member):
+    channel: discord.TextChannel = member.guild.system_channel
+    embed = joinembed(member)
     await channel.send(embed=embed)
 
 
@@ -165,6 +166,6 @@ async def on_command_error(ctx: Context, error: errors.CommandError):
 channelcounter = 1
 musicchannelcounter = 1
 
-add_cogs(bot, [Administration])
+add_cogs(bot, [Administration, Information])
 
 bot.run(tokenid)

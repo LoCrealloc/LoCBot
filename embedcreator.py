@@ -1,4 +1,4 @@
-from discord import Embed, User, Guild, Message, Member
+from discord import Embed, Guild, Message, Member
 from data import avatar_url, repository_url, color, version, features, servericon_url, loc_mention
 
 
@@ -19,7 +19,7 @@ def infoembed():
     return embed
 
 
-def joinembed(user: User):
+def joinembed(user: Member):
     embed = Embed(title="Nezugang",
                   description="Eine neue Person hat den Weg auf diesen Server gefunden. Herzlich Willkommen!",
                   color=color,

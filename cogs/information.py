@@ -1,4 +1,4 @@
-from discord.ext.commands import Cog, command, Bot, has_permissions, Context
+from discord.ext.commands import Cog, command, Bot, Context
 from embedcreator import infoembed, serverinfoembed
 from discord import Guild
 
