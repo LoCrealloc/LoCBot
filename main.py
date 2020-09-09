@@ -77,20 +77,28 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
 
 
 @bot.event
-async def on_raw_reaction_add(ctx: discord.RawReactionActionEvent):
-    if ctx.message_id == data.rolemessage_id:
-        if ctx.emoji.name in data.reactions:
-            color = data.reactord[ctx.emoji.name]
+async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
+    if reaction.message_id == data.rolemessage_id:
+        if reaction.emoji.name in data.reactions:
+            try:
+                color = data.reactord[reaction.emoji.name]
+            except KeyError:
+                channel = bot.get_channel(reaction.channel_id)
+                message = await channel.fetch_message(reaction.message_id)
+                await message.remove_reaction(reaction.emoji.name)
             guild: discord.Guild = await bot.fetch_guild(data.guild_id)
             role = discord.utils.get(guild.roles, name=color)
-            member: discord.Member = await guild.fetch_member(ctx.user_id)
+            member: discord.Member = await guild.fetch_member(reaction.user_id)
             await member.add_roles(role)
 
 
 @bot.event
 async def on_raw_reaction_remove(reaction: discord.RawReactionActionEvent):
     if reaction.message_id == data.rolemessage_id:
-        color = data.reactord[reaction.emoji.name]
+        try:
+            color = data.reactord[reaction.emoji.name]
+        except KeyError:
+            return
         guild: discord.Guild = await bot.fetch_guild(data.guild_id)
         role = discord.utils.get(guild.roles, name=color)
         member: discord.Member = await guild.fetch_member(reaction.user_id)
