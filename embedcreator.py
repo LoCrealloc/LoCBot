@@ -20,7 +20,7 @@ def infoembed():
 
 
 def joinembed(user: Member):
-    embed = Embed(title="Nezugang",
+    embed = Embed(title="Neuzugang",
                   description="Eine neue Person hat den Weg auf diesen Server gefunden. Herzlich Willkommen!",
                   color=color,
                   url="https://discord.gg/Sx2saFx")
