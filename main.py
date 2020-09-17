@@ -144,7 +144,7 @@ async def on_message(message: Message):
             await message.delete()
             await message.author.send(f"Werbung für andere Server ist auf **{message.guild.name}** untersagt!")
 
-            message.channel.send(embed=linkembed(message))
+            await message.channel.send(embed=linkembed(message))
 
             return
 
